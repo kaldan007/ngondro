@@ -11,24 +11,22 @@ const source = readFileSync(join(root, mdFile), 'utf8');
 // One entry per paragraph of the .md, in order. `splits` are the words each
 // later passage of that section starts with; every passage is one Next press.
 const sections = [
-  { bo: 'དལ་འབྱོར', en: 'Precious human life' },
-  { bo: 'མི་རྟག', en: 'Impermanence' },
-  { bo: 'ལས་འབྲས', en: 'Karma' },
-  { bo: 'སྡུག་བསྔལ', en: 'Suffering' },
-  { bo: 'སྐྱབས་འགྲོ', en: 'Refuge', splits: ['མདུན་དུ་རང་དང་མ་སོགས', 'ནམ་མཁའི་གནས་སུ་ནམ་མཁའ'] },
-  { bo: 'ཚད་མེད་བཞི', en: 'Four immeasurables' },
-  { bo: 'སེམས་བསྐྱེད', en: 'Bodhichitta' },
-  { bo: 'འབྲས་བུའི་སེམས་བསྐྱེད', en: 'Bodhichitta of the fruition' },
-  { bo: 'མཎ་ཌལ', en: 'Mandala offering' },
+  { bo: 'དལ་འབྱོར་གྱི་མི་ལུས་རིན་ཆེན་བསམ་པ།' },
+  { bo: 'འཆི་བ་དང་མི་རྟག་པར་བསམ་པ།' },
+  { bo: 'ལས་རྒྱུ་འབྲས་ལ་བསམ་པ།' },
+  { bo: 'འཁོར་བའི་ཉེས་དམིགས་བསམ་པ།' },
+  { bo: 'སྐྱབས་འགྲོ།', splits: ['མདུན་དུ་རང་དང་མ་སོགས', 'ནམ་མཁའི་གནས་སུ་ནམ་མཁའ'] },
+  { bo: 'ཚད་མེད་བཞི།' },
+  { bo: 'སེམས་བསྐྱེད།' },
+  { bo: 'འབྲས་བུའི་སེམས་བསྐྱེད།' },
+  { bo: 'མཎ་ཌལ།' },
   {
-    bo: 'རྡོ་རྗེ་སེམས་དཔའ',
-    en: 'Vajrasattva',
+    bo: 'རྡོ་རྗེ་སེམས་དཔའ།',
     splits: ['སྟོབས་བཞི་ཚང་པའི', 'ཐུན་མཐར། མགོན་པོ', 'ཞེས་གསོལ་བ་བཏབ་པས', 'མཐར། དགེ་བ་འདི་ཡིས'],
   },
-  { bo: 'བླ་མའི་རྣལ་འབྱོར', en: 'Guru yoga', splits: ['ཧྰུྃ༔ ཨོ་རྒྱན་ཡུལ'] },
+  { bo: 'བླ་མའི་རྣལ་འབྱོར།', splits: ['ཧྰུྃ༔ ཨོ་རྒྱན་ཡུལ'] },
   {
-    bo: 'ཡན་ལག་བདུན་པ',
-    en: 'Seven branches',
+    bo: 'ཡན་ལག་བདུན་པ།',
     splits: ['གསོལ་བ་གདབ་་པ་ནི', 'གཞན་ཡང་ཨོ་རྒྱན་ཆེན་པོ', 'ཐུན་མཐར་དབང་བཞི', 'སྐྱེ་བ་ཀུན་ཏུ'],
   },
 ];
@@ -92,7 +90,7 @@ const articles = paragraphs.flatMap((paragraph, s) => {
     count += 1;
     return [
       `<article class="passage" data-section="${s}">`,
-      `<header class="passage__head"><h2 lang="bo">${section.bo}</h2><p class="passage__en">${section.en}</p></header>`,
+      `<header class="passage__head"><h2 lang="bo">${section.bo}</h2></header>`,
       ...runs.map(runHtml),
       '</article>',
     ].join('\n');
@@ -103,7 +101,7 @@ const articles = paragraphs.flatMap((paragraph, s) => {
 const bare = (s) => s.replace(/<\/?sub>/g, '').replace(/\s/g, '');
 if (bare(recited.join('')) !== bare(source)) throw new Error('Passages differ from the source text');
 
-const options = sections.map((s, i) => `<option value="${i}">${s.bo}  ${s.en}</option>`);
+const options = sections.map((s, i) => `<option value="${i}">${s.bo}</option>`);
 const inject = (html, name, body) =>
   html.replace(new RegExp(`(<!-- ${name}:start -->)[\\s\\S]*?(<!-- ${name}:end -->)`), `$1\n${body}\n$2`);
 

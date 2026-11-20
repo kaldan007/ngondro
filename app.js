@@ -18,6 +18,7 @@ const state = {
   view: remembered('view', 'overlay'),
   size: Number(remembered('size', 27)),
   dim: Number(remembered('dim', 72)),
+  theme: remembered('theme', 'dark') === 'light' ? 'light' : 'dark',
   started: 0,
 };
 
@@ -75,6 +76,17 @@ function renderSize() {
 function renderDim() {
   document.documentElement.style.setProperty('--dim', state.dim / 100);
   $('dim').value = state.dim;
+}
+
+function renderTheme() {
+  const light = state.theme === 'light';
+  document.documentElement.dataset.theme = state.theme;
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  if (themeColor) themeColor.content = light ? '#f4efe4' : '#00091b';
+  document.querySelectorAll('.theme').forEach((btn) => {
+    btn.setAttribute('aria-pressed', String(light));
+    btn.setAttribute('aria-label', light ? 'Switch to dark theme' : 'Switch to light theme');
+  });
 }
 
 function startedAt() {
@@ -141,6 +153,14 @@ $('dim').addEventListener('input', (e) => {
   renderDim();
 });
 
+document.querySelectorAll('.theme').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    state.theme = state.theme === 'light' ? 'dark' : 'light';
+    remember('theme', state.theme);
+    renderTheme();
+  });
+});
+
 document.addEventListener('keydown', (e) => {
   if (!practice.classList.contains('is-active')) return;
   if (e.target.matches('input, select') || e.altKey || e.ctrlKey || e.metaKey) return;
@@ -154,6 +174,7 @@ if (!sizes.includes(state.size)) state.size = 27;
 if (!['overlay', 'side', 'stack', 'text'].includes(state.view)) state.view = 'overlay';
 renderSize();
 renderDim();
+renderTheme();
 
 // A link or a reload mid-practice returns to the same passage and layout.
 const saved = new URLSearchParams(location.hash.slice(1));
