@@ -8,6 +8,13 @@
   <meta name="description"
     content="The ngöndro recitation with the refuge tree thangka: read it over the image, beside it, or alone.">
   <meta name="theme-color" content="#00091b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ngöndro">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -53,78 +60,13 @@
     <h1 lang="bo" tabindex="-1">སྔོན་འགྲོའི་ངག་འདོན་ཐར་ལམ་རབ་གསལ།</h1>
     <p class="threshold__ask">Would you like to begin your practice?</p>
     <button id="begin" class="btn btn--primary" type="button">Begin practice</button>
+    <div class="install-slot" hidden>
+      <button class="install btn btn--secondary" type="button" aria-controls="install-hint-start">Install app</button>
+      <p id="install-hint-start" class="install-hint" hidden>On iPhone or iPad, tap Share, then Add to Home Screen.</p>
+    </div>
   </main>
 
   <section id="practice" class="screen practice" data-view="overlay" aria-label="Practice">
-    <header class="bar bar--top">
-      <div class="bar__jump">
-        <label class="visually-hidden" for="jump">Go to a section</label>
-        <select id="jump" class="jump">
-          <!-- sections:start -->
-          <option value="0">དལ་འབྱོར་གྱི་མི་ལུས་རིན་ཆེན་བསམ་པ།</option>
-          <option value="1">འཆི་བ་དང་མི་རྟག་པར་བསམ་པ།</option>
-          <option value="2">ལས་རྒྱུ་འབྲས་ལ་བསམ་པ།</option>
-          <option value="3">འཁོར་བའི་ཉེས་དམིགས་བསམ་པ།</option>
-          <option value="4">སྐྱབས་འགྲོ།</option>
-          <option value="5">ཚད་མེད་བཞི།</option>
-          <option value="6">སེམས་བསྐྱེད།</option>
-          <option value="7">འབྲས་བུའི་སེམས་བསྐྱེད།</option>
-          <option value="8">མཎ་ཌལ།</option>
-          <option value="9">རྡོ་རྗེ་སེམས་དཔའ།</option>
-          <option value="10">བླ་མའི་རྣལ་འབྱོར།</option>
-          <option value="11">ཡན་ལག་བདུན་པ།</option>
-          <!-- sections:end -->
-        </select>
-      </div>
-
-      <fieldset class="seg">
-        <legend class="visually-hidden">Layout</legend>
-        <input type="radio" name="view" id="view-overlay" value="overlay" checked>
-        <label for="view-overlay" aria-label="Text over image"><svg viewBox="0 0 16 16" aria-hidden="true">
-            <path d="M2 2h12v12H2z" fill="none" stroke="currentColor" />
-            <path d="M4.5 6h7M4.5 8h7M4.5 10h7" stroke="currentColor" />
-          </svg><span>Overlay</span></label>
-        <input type="radio" name="view" id="view-side" value="side">
-        <label for="view-side" aria-label="Image left, text right"><svg viewBox="0 0 16 16" aria-hidden="true">
-            <path d="M1.5 2.5h13v11h-13z" fill="none" stroke="currentColor" />
-            <path d="M1.5 2.5H7v11H1.5z" fill="currentColor" />
-          </svg><span>Side by side</span></label>
-        <input type="radio" name="view" id="view-stack" value="stack">
-        <label for="view-stack" aria-label="Image top, text bottom"><svg viewBox="0 0 16 16" aria-hidden="true">
-            <path d="M2.5 1.5h11v13h-11z" fill="none" stroke="currentColor" />
-            <path d="M2.5 1.5h11V7h-11z" fill="currentColor" />
-          </svg><span>Top and bottom</span></label>
-        <input type="radio" name="view" id="view-text" value="text">
-        <label for="view-text" aria-label="Text only"><svg viewBox="0 0 16 16" aria-hidden="true">
-            <path d="M2.5 4h11M2.5 8h11M2.5 12h7" stroke="currentColor" fill="none" />
-          </svg><span>Text only</span></label>
-      </fieldset>
-
-      <div class="tools">
-        <label class="dim">
-          <span>Dim image</span>
-          <input id="dim" type="range" min="20" max="92" step="2" value="72">
-        </label>
-        <div class="size" role="group" aria-label="Text size">
-          <button id="smaller" class="tool" type="button" aria-label="Smaller text">A−</button>
-          <button id="larger" class="tool" type="button" aria-label="Larger text">A+</button>
-        </div>
-        <button class="theme" type="button" aria-pressed="false">
-          <svg class="theme__sun" viewBox="0 0 16 16" aria-hidden="true">
-            <circle cx="8" cy="8" r="2.4" fill="none" stroke="currentColor" />
-            <path d="M8 1.6v1.8M8 12.6v1.8M1.6 8h1.8M12.6 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3" fill="none" stroke="currentColor" />
-          </svg>
-          <svg class="theme__moon" viewBox="0 0 16 16" aria-hidden="true">
-            <path d="M9.4 2.2a5.1 5.1 0 1 0 4.2 6.6A4 4 0 0 1 9.4 2.2z" fill="none" stroke="currentColor" />
-          </svg>
-          <span class="theme__to-light">Light</span>
-          <span class="theme__to-dark">Dark</span>
-        </button>
-      </div>
-
-      <button id="end" class="btn btn--secondary" type="button">End practice</button>
-    </header>
-
     <div class="stage">
       <figure id="thangka" class="thangka" tabindex="-1">
         <img src="assets/thangka-1600.jpg" srcset="assets/thangka-1600.jpg 1030w, assets/thangka-3200.jpg 2060w"
@@ -427,6 +369,93 @@
     </div>
 
     <footer class="bar bar--bottom">
+      <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="practice-menu" aria-label="Open practice menu">
+        <svg class="menu-toggle__bars" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" fill="none" />
+        </svg>
+        <svg class="menu-toggle__close" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" fill="none" />
+        </svg>
+      </button>
+      <div id="practice-menu" class="menu" hidden>
+        <div class="menu__panel">
+          <label class="field">
+            <span>Section</span>
+            <select id="jump" class="jump">
+              <!-- sections:start -->
+              <option value="0">དལ་འབྱོར་གྱི་མི་ལུས་རིན་ཆེན་བསམ་པ།</option>
+              <option value="1">འཆི་བ་དང་མི་རྟག་པར་བསམ་པ།</option>
+              <option value="2">ལས་རྒྱུ་འབྲས་ལ་བསམ་པ།</option>
+              <option value="3">འཁོར་བའི་ཉེས་དམིགས་བསམ་པ།</option>
+              <option value="4">སྐྱབས་འགྲོ།</option>
+              <option value="5">ཚད་མེད་བཞི།</option>
+              <option value="6">སེམས་བསྐྱེད།</option>
+              <option value="7">འབྲས་བུའི་སེམས་བསྐྱེད།</option>
+              <option value="8">མཎ་ཌལ།</option>
+              <option value="9">རྡོ་རྗེ་སེམས་དཔའ།</option>
+              <option value="10">བླ་མའི་རྣལ་འབྱོར།</option>
+              <option value="11">ཡན་ལག་བདུན་པ།</option>
+              <!-- sections:end -->
+            </select>
+          </label>
+
+          <fieldset class="seg">
+            <legend>Layout</legend>
+            <div class="seg__options">
+              <input type="radio" name="view" id="view-overlay" value="overlay" checked>
+              <label for="view-overlay" aria-label="Text over image"><svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M2 2h12v12H2z" fill="none" stroke="currentColor" />
+                  <path d="M4.5 6h7M4.5 8h7M4.5 10h7" stroke="currentColor" />
+                </svg><span>Overlay</span></label>
+              <input type="radio" name="view" id="view-side" value="side">
+              <label for="view-side" aria-label="Image left, text right"><svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M1.5 2.5h13v11h-13z" fill="none" stroke="currentColor" />
+                  <path d="M1.5 2.5H7v11H1.5z" fill="currentColor" />
+                </svg><span>Side by side</span></label>
+              <input type="radio" name="view" id="view-stack" value="stack">
+              <label for="view-stack" aria-label="Image top, text bottom"><svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M2.5 1.5h11v13h-11z" fill="none" stroke="currentColor" />
+                  <path d="M2.5 1.5h11V7h-11z" fill="currentColor" />
+                </svg><span>Top and bottom</span></label>
+              <input type="radio" name="view" id="view-text" value="text">
+              <label for="view-text" aria-label="Text only"><svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M2.5 4h11M2.5 8h11M2.5 12h7" stroke="currentColor" fill="none" />
+                </svg><span>Text only</span></label>
+            </div>
+          </fieldset>
+
+          <div class="tools">
+            <label class="dim">
+              <span>Dim image</span>
+              <input id="dim" type="range" min="20" max="92" step="2" value="72">
+            </label>
+            <div class="size" role="group" aria-label="Text size">
+              <span class="size__label">Size</span>
+              <button id="smaller" class="tool" type="button" aria-label="Smaller text">A−</button>
+              <button id="larger" class="tool" type="button" aria-label="Larger text">A+</button>
+            </div>
+            <button class="theme" type="button" aria-pressed="false">
+              <svg class="theme__sun" viewBox="0 0 16 16" aria-hidden="true">
+                <circle cx="8" cy="8" r="2.4" fill="none" stroke="currentColor" />
+                <path d="M8 1.6v1.8M8 12.6v1.8M1.6 8h1.8M12.6 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3" fill="none" stroke="currentColor" />
+              </svg>
+              <svg class="theme__moon" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M9.4 2.2a5.1 5.1 0 1 0 4.2 6.6A4 4 0 0 1 9.4 2.2z" fill="none" stroke="currentColor" />
+              </svg>
+              <span class="theme__to-light">Light</span>
+              <span class="theme__to-dark">Dark</span>
+            </button>
+          </div>
+
+          <div class="menu__actions">
+            <button id="end" class="btn btn--secondary" type="button">End practice</button>
+            <div class="install-slot" hidden>
+              <button class="install btn btn--secondary" type="button" aria-controls="install-hint-menu">Install app</button>
+              <p id="install-hint-menu" class="install-hint" hidden>On iPhone or iPad, tap Share, then Add to Home Screen.</p>
+            </div>
+          </div>
+        </div>
+      </div>
       <button id="prev" class="btn btn--secondary" type="button">Previous</button>
       <div class="progress">
         <p id="count" class="count" aria-live="polite"></p>

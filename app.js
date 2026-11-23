@@ -96,6 +96,7 @@ function startedAt() {
 function begin(at = 0, started = Date.now()) {
   state.started = started;
   try { sessionStorage.setItem('started', started); } catch { /* private window */ }
+  setMenu(false, { focus: false });
   show(practice);
   renderView();
   go(at);
@@ -112,6 +113,7 @@ function duration(ms) {
 }
 
 function end() {
+  setMenu(false, { focus: false });
   $('duration').textContent = duration(Date.now() - state.started);
   show($('closing'));
   writeUrl();
@@ -129,6 +131,7 @@ $('next').addEventListener('click', () => (state.at === passages.length - 1 ? en
 
 $('jump').addEventListener('change', (e) => {
   go(passages.findIndex((p) => p.dataset.section === e.target.value));
+  setMenu(false);
 });
 
 document.querySelectorAll('input[name="view"]').forEach((radio) => {
@@ -161,8 +164,32 @@ document.querySelectorAll('.theme').forEach((btn) => {
   });
 });
 
+const menu = $('practice-menu');
+const menuToggle = $('menu-toggle');
+
+function setMenu(open, { focus = true } = {}) {
+  menu.hidden = !open;
+  menuToggle.setAttribute('aria-expanded', String(open));
+  menuToggle.setAttribute('aria-label', open ? 'Close practice menu' : 'Open practice menu');
+  if (!focus) return;
+  if (open) menu.querySelector('select, button, input')?.focus();
+  else menuToggle.focus();
+}
+
+menuToggle.addEventListener('click', () => setMenu(menu.hidden));
+
+document.addEventListener('click', (e) => {
+  if (menu.hidden || e.target.closest('#practice-menu, #menu-toggle')) return;
+  setMenu(false, { focus: false });
+});
+
 document.addEventListener('keydown', (e) => {
-  if (!practice.classList.contains('is-active')) return;
+  if (e.key === 'Escape' && !menu.hidden) {
+    setMenu(false);
+    e.preventDefault();
+    return;
+  }
+  if (!practice.classList.contains('is-active') || !menu.hidden) return;
   if (e.target.matches('input, select') || e.altKey || e.ctrlKey || e.metaKey) return;
   if (e.key === 'ArrowRight') go(state.at + 1);
   if (e.key === 'ArrowLeft') go(state.at - 1);
@@ -182,3 +209,62 @@ if (saved.has('view') && ['overlay', 'side', 'stack', 'text'].includes(saved.get
   state.view = saved.get('view');
 }
 if (saved.has('at')) begin((Number(saved.get('at')) || 1) - 1, startedAt());
+
+let deferredInstall = null;
+
+function runningInstalled() {
+  return matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
+
+function isIos() {
+  const ua = navigator.userAgent;
+  if (/iphone|ipad|ipod/i.test(ua)) return true;
+  return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+}
+
+function showInstall(show) {
+  document.querySelectorAll('.install-slot').forEach((slot) => {
+    slot.hidden = !show;
+  });
+  if (!show) {
+    document.querySelectorAll('.install-hint').forEach((hint) => {
+      hint.hidden = true;
+    });
+  }
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {
+    /* file or private window */
+  });
+}
+
+if (!runningInstalled()) {
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredInstall = event;
+    showInstall(true);
+  });
+  if (isIos()) showInstall(true);
+}
+
+window.addEventListener('appinstalled', () => {
+  deferredInstall = null;
+  showInstall(false);
+});
+
+document.querySelectorAll('.install').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    if (!deferredInstall) {
+      if (!isIos()) return;
+      const hint = btn.closest('.install-slot')?.querySelector('.install-hint');
+      if (hint) hint.hidden = !hint.hidden;
+      return;
+    }
+    const prompt = deferredInstall;
+    deferredInstall = null;
+    prompt.prompt();
+    await prompt.userChoice;
+    showInstall(false);
+  });
+});

@@ -1,5 +1,5 @@
 /* Hallmark · shape: app screen · genre: atmospheric · theme: Midnight (deal 2/3, seed quiet-reader-tibetan-buddhist-c474·eb067390·2026-11-03·r0)
- * nav: top bar of layout and text tools, bottom bar of passage steps · signature: the thangka in its own colours with the text read over it · states: start, practising in four layouts, ended
+ * nav: practice tools in a menu, bottom bar of passage steps · signature: the thangka in its own colours with the text read over it · states: start, practising in four layouts, ended
  * palette: lapis paper, saffron-vermilion primary, turquoise secondary (from the thangka)
  * axes: dark/grotesk-sans/cool · posture: committed · contrast: pass · v2.0.0 */
 /* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: overlay legibility on a busy painting, so the viewer sets the dimming and it starts high */
@@ -47,16 +47,61 @@
 
 /* Practice shell */
 
-.js .practice.is-active { height: 100dvh; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
+.js .practice.is-active { height: 100dvh; display: grid; grid-template-rows: minmax(0, 1fr) auto; }
 
 .bar {
   display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm) var(--space-md);
   padding: var(--space-xs) var(--space-md);
   background: var(--color-paper-2);
 }
-.bar--bottom { flex-wrap: nowrap; padding-bottom: max(var(--space-xs), env(safe-area-inset-bottom)); }
+.bar--bottom {
+  position: relative; z-index: var(--z-sticky);
+  flex-wrap: nowrap; padding-bottom: max(var(--space-xs), env(safe-area-inset-bottom));
+}
 .bar--bottom .btn { min-width: 112px; }
-.bar__jump { flex: 1 1 220px; min-width: 0; }
+
+.menu-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: none; width: 44px; min-height: 44px; padding: 0;
+  background: none; color: var(--color-ink);
+  border: var(--rule-hair) solid var(--color-rule-2); border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background-color var(--dur-short) var(--ease-out);
+}
+.menu-toggle:hover { background: var(--color-paper-3); border-color: var(--color-secondary); }
+.menu-toggle svg { width: 16px; height: 16px; }
+.menu-toggle__close { display: none; }
+.menu-toggle[aria-expanded="true"] .menu-toggle__bars { display: none; }
+.menu-toggle[aria-expanded="true"] .menu-toggle__close { display: block; }
+
+.menu {
+  position: absolute; z-index: var(--z-dropdown);
+  left: var(--space-md); bottom: calc(100% + var(--space-xs));
+  width: min(28rem, calc(100vw - var(--space-md) * 2));
+  max-height: min(72dvh, 40rem); overflow: auto; overscroll-behavior: contain;
+}
+.menu__panel {
+  display: flex; flex-direction: column; align-items: stretch; gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-paper-2); border: var(--rule-hair) solid var(--color-rule-2);
+  box-shadow: var(--shadow-card);
+}
+.field { display: flex; flex-direction: column; gap: var(--space-2xs); min-width: 0; }
+.field > span, .menu legend {
+  padding: 0; color: var(--color-ink-2); font-size: var(--text-sm); font-weight: 500;
+}
+.menu .jump { max-width: none; }
+.menu .seg { flex-direction: column; align-items: stretch; gap: var(--space-2xs); }
+.menu .seg__options { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: var(--space-2xs); }
+.menu .seg label { margin-left: 0; }
+.menu .tools { flex-wrap: wrap; justify-content: flex-start; }
+.menu__actions { display: flex; flex-direction: column; align-items: stretch; gap: var(--space-xs); }
+.menu__actions .btn { width: 100%; }
+
+.install-slot { display: flex; flex-direction: column; align-items: center; gap: var(--space-xs); }
+.menu .install-slot { align-items: stretch; }
+.install-hint { max-width: 32ch; margin: 0; color: var(--color-muted); font-size: var(--text-sm); text-align: center; }
+.menu .install-hint { max-width: none; text-align: left; }
 
 .jump {
   width: 100%; max-width: 340px; min-height: 44px; padding: 0 var(--space-sm);
@@ -85,14 +130,16 @@
 .dim input { width: 96px; height: 44px; margin: 0; accent-color: var(--color-accent); cursor: pointer; }
 .practice:not([data-view="overlay"]) .dim { display: none; }
 
-.size { display: flex; }
+.size { display: flex; align-items: center; }
 .tool {
-  min-width: 44px; min-height: 44px; margin-left: -1px;
+  min-width: 44px; min-height: 44px;
   background: none; color: var(--color-ink);
   border: var(--rule-hair) solid var(--color-rule-2); border-radius: var(--radius-pill);
   font-size: var(--text-sm); font-weight: 500; cursor: pointer;
   transition: background-color var(--dur-short) var(--ease-out);
 }
+.size .tool + .tool { margin-left: -1px; }
+.size__label { margin-right: var(--space-xs); color: var(--color-ink-2); font-size: var(--text-sm); font-weight: 500; }
 .tool:hover:not(:disabled) { background: var(--color-paper-3); }
 .tool:disabled { opacity: 0.45; cursor: not-allowed; }
 
@@ -121,6 +168,10 @@ html[data-theme="light"] .theme__to-dark { display: inline; }
 .bar .theme__to-light,
 .bar .theme__to-dark,
 html[data-theme="light"] .bar .theme__to-dark { display: none; }
+.menu .theme { padding: 0 var(--space-sm); }
+.menu .theme__to-light { display: inline; }
+html[data-theme="light"] .menu .theme__to-light { display: none; }
+html[data-theme="light"] .menu .theme__to-dark { display: inline; }
 
 .progress { flex: 1; min-width: 0; display: grid; justify-items: center; gap: var(--space-2xs); }
 .count { color: var(--color-muted); font-size: var(--text-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
@@ -184,22 +235,29 @@ html[data-theme="light"] .bar .theme__to-dark { display: none; }
   .seg label { padding: 0 var(--space-md); }
   .seg label span { display: none; }
   .seg label[for="view-side"] { display: none; }
-  .bar__jump { order: -2; flex: 1 1 calc(100% - 136px); }
-  #end { order: -1; flex: none; padding: 0 var(--space-md); }
-  .tools { flex: 1; justify-content: flex-end; gap: var(--space-sm); }
+  .menu .seg label span { display: inline; }
+  .menu .seg label { padding: 0 var(--space-sm); }
   .dim span { display: none; }
   .dim input { width: 72px; }
+  .menu .dim span { display: inline; }
+  .menu .dim input { width: min(100%, 180px); }
   .theme { padding: 0; }
   .theme__to-light,
   .theme__to-dark,
   html[data-theme="light"] .theme__to-dark { display: none; }
-  .bar--bottom .btn { min-width: 88px; }
+  .menu .theme { padding: 0 var(--space-sm); }
+  .menu .theme__to-light { display: inline; }
+  html[data-theme="light"] .menu .theme__to-light { display: none; }
+  html[data-theme="light"] .menu .theme__to-dark { display: inline; }
+  .bar--bottom { gap: var(--space-xs); }
+  .bar--bottom .btn { min-width: 0; padding-inline: var(--space-sm); }
   .reading { padding: var(--space-md); }
 }
 
 /* Without scripting the whole text reads as one page */
 html:not(.js) .theme,
-html:not(.js) .practice .bar, html:not(.js) #closing { display: none; }
+html:not(.js) .practice .bar, html:not(.js) #closing,
+html:not(.js) .install-slot { display: none; }
 html:not(.js) .stage { container-type: normal; display: block; overflow: visible; }
 html:not(.js) .thangka img { max-width: 560px; height: auto; margin: 0 auto var(--space-xl); }
 html:not(.js) .reading { overflow: visible; display: block; }
