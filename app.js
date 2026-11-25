@@ -222,6 +222,20 @@ function isIos() {
   return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
 }
 
+function isSafari() {
+  const ua = navigator.userAgent;
+  return /safari/i.test(ua) && !/chrome|chromium|crios|edg|opr|firefox|fxios/i.test(ua);
+}
+
+function installHint() {
+  if (!window.isSecureContext) {
+    return 'Open the published site in a browser. A file on this computer cannot be installed.';
+  }
+  if (isIos()) return 'In Safari, tap Share, then Add to Home Screen.';
+  if (isSafari()) return 'In Safari, choose File, then Add to Dock.';
+  return 'Use the install icon in the address bar, or try this button again in a moment.';
+}
+
 function showInstall(show) {
   document.querySelectorAll('.install-slot').forEach((slot) => {
     slot.hidden = !show;
@@ -233,19 +247,29 @@ function showInstall(show) {
   }
 }
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {
-    /* file or private window */
+function showInstallHints(show) {
+  document.querySelectorAll('.install-hint').forEach((hint) => {
+    hint.hidden = !show;
+  });
+}
+
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(() => {
+    /* private window, or the worker file did not load */
   });
 }
 
 if (!runningInstalled()) {
+  document.querySelectorAll('.install-hint').forEach((hint) => {
+    hint.textContent = installHint();
+  });
+  showInstall(true);
+  if (!window.isSecureContext || isIos() || isSafari()) showInstallHints(true);
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
     deferredInstall = event;
-    showInstall(true);
+    showInstallHints(false);
   });
-  if (isIos()) showInstall(true);
 }
 
 window.addEventListener('appinstalled', () => {
@@ -255,16 +279,19 @@ window.addEventListener('appinstalled', () => {
 
 document.querySelectorAll('.install').forEach((btn) => {
   btn.addEventListener('click', async () => {
-    if (!deferredInstall) {
-      if (!isIos()) return;
-      const hint = btn.closest('.install-slot')?.querySelector('.install-hint');
-      if (hint) hint.hidden = !hint.hidden;
+    const pending = deferredInstall;
+    if (!pending) {
+      showInstallHints(true);
       return;
     }
-    const prompt = deferredInstall;
-    deferredInstall = null;
-    prompt.prompt();
-    await prompt.userChoice;
-    showInstall(false);
+    try {
+      await pending.prompt();
+      const choice = await pending.userChoice;
+      deferredInstall = null;
+      if (choice.outcome === 'accepted') showInstall(false);
+    } catch (error) {
+      deferredInstall = pending;
+      showInstallHints(true);
+    }
   });
 });
